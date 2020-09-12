@@ -24,12 +24,5 @@ class TableViewCell: UITableViewCell {
     public func setup(title: String, subtitle: String) {
         titleLabel.text = title
         subtitleLabel.text = subtitle
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
+    }        
 }

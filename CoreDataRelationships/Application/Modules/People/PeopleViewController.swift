@@ -9,10 +9,11 @@
 import UIKit
 
 class PeopleViewController: UIViewController, PersonTableViewClickListener {
-        
+            
     @IBOutlet weak var peopleTableView: PeopleTableView!
     
     var device: Device?
+    let localDataSource = PersonLocalDataSource.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,7 +43,7 @@ class PeopleViewController: UIViewController, PersonTableViewClickListener {
                 return
             }
             
-            PersonLocalDataSource.shared.createPerson(name: name)
+            self.localDataSource.createPerson(name: name)
             
             self.reloadTableView()
         }
@@ -58,13 +59,18 @@ class PeopleViewController: UIViewController, PersonTableViewClickListener {
             return
         }
         
-        PersonLocalDataSource.shared.addDeviceTo(person: person, selectedDevice)
-        
+        localDataSource.addDeviceTo(person: person, selectedDevice)
+                
         self.navigationController?.popViewController(animated: true)
     }
     
+    func delete(person: Person) {
+        localDataSource.delete(person: person)
+        reloadTableView()
+    }
+    
     func reloadTableView() {
-        let people = PersonLocalDataSource.shared.fetchAllPeople()
+        let people = localDataSource.fetchAllPeople()
         peopleTableView.people = people
         peopleTableView.reloadData()
     }

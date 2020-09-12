@@ -4,27 +4,13 @@ struct DeviceLocalDataSource {
     
     static let shared = DeviceLocalDataSource()
     
-    let persistentContainer: NSPersistentContainer = {
-       let container = NSPersistentContainer(name: "CoreDataRelationships")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        })
-        
-        return container
-    }()
-    
-    
+    let context = BaseLocalDataSource.shared.getContext()
+            
     @discardableResult
     public func createDevices(name: String) -> Device? {
-        let context = BaseLocalDataSource.shared.getContext()
-        
-        let device = NSEntityDescription.insertNewObject(forEntityName: "Device", into: context) as! Device
-        
+        let device = NSEntityDescription.insertNewObject(forEntityName: "Device", into: context) as! Device            
         device.name = name
-        
-        
+                
         do {
             try context.save()
             return device
@@ -35,9 +21,15 @@ struct DeviceLocalDataSource {
         return nil
     }
     
+    public func update(device: Device) {
+        do {
+            try context.save()
+        } catch let error {
+            print("Failed to update person, reason: \(error)")
+        }
+    }
+    
     public func fetchAllDevices() -> [Device] {
-        let context = BaseLocalDataSource.shared.getContext()
-        
         let fetchRequest = NSFetchRequest<Device>(entityName: "Device")
         
         do {
@@ -49,4 +41,30 @@ struct DeviceLocalDataSource {
         
         return []
     }
+    
+    public func fetchBy(name: String) -> Device? {
+        let fetchRequest = NSFetchRequest<Device>(entityName: "Device")
+        fetchRequest.fetchLimit = 1
+        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        
+        do {
+            let foundDevices = try context.fetch(fetchRequest)
+            return foundDevices.first
+        } catch let error {
+            print("Failed to find device with name: \(name) Error: \(error)")
+        }
+        
+        return nil
+    }
+    
+        
+    public func delete(device: Device) {
+        context.delete(device)
+        
+        do {
+            try context.save()
+        } catch let error {
+            print("Failed to delete person, reason: \(error)")
+        }
+    }    
 }

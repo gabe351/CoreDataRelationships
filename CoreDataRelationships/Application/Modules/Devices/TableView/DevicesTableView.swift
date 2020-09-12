@@ -44,4 +44,15 @@ class DevicesTableView: UITableView, UITableViewDataSource, UITableViewDelegate 
         let rowHeight: CGFloat = 85
         return rowHeight
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            let currentDevice = devices[indexPath.row]
+            listener?.delete(device: currentDevice)
+        }
+    }
 }

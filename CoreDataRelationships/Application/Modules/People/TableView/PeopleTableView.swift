@@ -44,4 +44,15 @@ class PeopleTableView: UITableView, UITableViewDataSource, UITableViewDelegate {
         let rowHeight: CGFloat = 50
         return rowHeight
     }
+        
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            let currentPerson = people[indexPath.row]
+            listener?.delete(person: currentPerson)
+        }
+    }
 }

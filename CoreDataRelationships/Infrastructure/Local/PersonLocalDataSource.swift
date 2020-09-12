@@ -4,20 +4,11 @@ struct PersonLocalDataSource {
     
     static let shared = PersonLocalDataSource()
     
-    let persistentContainer: NSPersistentContainer = {
-       let container = NSPersistentContainer(name: "CoreDataRelationships")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        })
-        
-        return container
-    }()
+    let context = BaseLocalDataSource.shared.getContext()
     
     @discardableResult
     public func createPerson(name: String) -> Person? {
-        let context = BaseLocalDataSource.shared.getContext()
+//        let context = BaseLocalDataSource.shared.getContext()
         
         let person = NSEntityDescription.insertNewObject(forEntityName: "Person", into: context) as! Person
         
@@ -34,8 +25,40 @@ struct PersonLocalDataSource {
         return nil
     }
     
+    public func fetchBy(name: String) -> Person? {
+        let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
+        fetchRequest.fetchLimit = 1
+        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        
+        do {
+            let foundPeople = try context.fetch(fetchRequest)
+            return foundPeople.first
+        } catch let error {
+            print("Failed to find person with name: \(name) Error: \(error)")
+        }
+        
+        return nil
+    }
+    
+    public func update(person: Person) {
+        do {
+            try context.save()
+        } catch let error {
+            print("Failed to update person, reason: \(error)")
+        }
+    }
+    
+    public func delete(person: Person) {
+        context.delete(person)
+        
+        do {
+            try context.save()
+        } catch let error {
+            print("Failed to delete person, reason: \(error)")
+        }
+    }
+    
     public func fetchAllPeople() -> [Person] {
-        let context = BaseLocalDataSource.shared.getContext()
         
         let fetchRequest = NSFetchRequest<Person>(entityName: "Person")
         
@@ -50,7 +73,6 @@ struct PersonLocalDataSource {
     }
     
     public func addDeviceTo(person: Person, _ device: Device) {
-        let context = BaseLocalDataSource.shared.getContext()
         
         person.addToDevice(device)
         

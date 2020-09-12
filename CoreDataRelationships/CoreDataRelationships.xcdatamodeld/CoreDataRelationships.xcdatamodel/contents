@@ -6,7 +6,7 @@
     </entity>
     <entity name="Person" representedClassName="Person" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="device" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Device" inverseName="owner" inverseEntity="Device"/>
+        <relationship name="device" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Device" inverseName="owner" inverseEntity="Device"/>
     </entity>
     <elements>
         <element name="Device" positionX="-54" positionY="-9" width="128" height="73"/>

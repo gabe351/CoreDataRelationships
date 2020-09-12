@@ -9,8 +9,10 @@
 import UIKit
 
 class DevicesViewController: UIViewController, DeviceTableViewClickListener {
-                    
+                            
     @IBOutlet weak var devicesTableView: DevicesTableView!
+    
+    let localDataSource = DeviceLocalDataSource.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,7 +39,7 @@ class DevicesViewController: UIViewController, DeviceTableViewClickListener {
                 return
             }
             
-            let createdDevice = DeviceLocalDataSource.shared.createDevices(name: name)
+            let createdDevice = self.localDataSource.createDevices(name: name)
             
             if createdDevice != nil {
                 self.reloadTableView()
@@ -56,8 +58,13 @@ class DevicesViewController: UIViewController, DeviceTableViewClickListener {
         self.navigationController?.pushViewController(peopleViewController, animated: true)
     }
     
+    func delete(device: Device) {
+        localDataSource.delete(device: device)
+        reloadTableView()
+    }
+    
     private func reloadTableView() {
-        let devices = DeviceLocalDataSource.shared.fetchAllDevices()
+        let devices = localDataSource.fetchAllDevices()
         devicesTableView.devices = devices
         devicesTableView.reloadData()
     }
